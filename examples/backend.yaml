@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-ingress
+  annotations:
+    cert-manager.io/issuer: "letsencrypt"
+    ngress.unix/socket: "conf=/tmp/conf.sock" # port with name "conf" -> output to unix socket instead service
+    ngress.proto/websocket: "true"
+    ngress.affinity/host: backend-node  # this ingress applied only on this host
+spec:
+  tls:
+    - hosts:
+        - "backend.example.com"
+      secretName: secret-backend.example.com
+  rules:
+    - host: backend.example.com
+      http:
+        paths:
+          - path: /echo
+            pathType: Exact
+            backend:
+              service:
+                name: backend-service
+                port:
+                  name: conf # look at the annotation, connect to /tmp/conf.sock
+          - path: /another-path
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service-2
+                port:
+                  number: 80

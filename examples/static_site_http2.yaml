@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-front
+  annotations:
+    cert-manager.io/issuer: "letsencrypt"
+    ngress.static/site: "site=/nginx-static/my-front.com" # directory on the host
+    ngress.proto/http2: "true"
+spec:
+  tls:
+    - hosts:
+        - "yourteams.ru"
+      secretName: example-front-secret.com
+  rules:
+  - host: example-front-secret.com
+    http:
+       paths:
+       - path: /
+         pathType: Prefix
+         backend:
+           service:
+             name: static-site
+             port:
+               name: site
+
