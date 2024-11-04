@@ -91,10 +91,8 @@ server {
 	}
 
 	// alt-svc header actual only for https!
-	if https {
-		for _, location := range c.routes {
-			location.write(c.addAltSvc, c.ProtoOpts, sb)
-		}
+	for _, location := range c.routes {
+		location.write(c.addAltSvc, c.ProtoOpts, sb)
 	}
 
 	sb.WriteString("\n}\n")
