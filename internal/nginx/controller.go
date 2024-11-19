@@ -132,22 +132,28 @@ func (c *Controller) OnDelete(obj interface{}) {
 	c.debounced(c.debounce)
 }
 
+func ingressName(ingress *networking.Ingress) string {
+	return fmt.Sprintf("%s.%s", ingress.Namespace, ingress.Name)
+}
+
 func (c *Controller) OnAddIngress(ingress *networking.Ingress) {
-	ing, ok := c.ingresses[ingress.Name]
+	name := ingressName(ingress)
+	ing, ok := c.ingresses[name]
 	if !ok {
 		ing = newIngress(ingress, c.hosts, c.secrets, c.services, c.hostname)
-		c.ingresses[ingress.Name] = ing
+		c.ingresses[name] = ing
 	} else {
 		klog.Warningf("INGRESS:%v.%v already exists", ingress.Namespace, ingress.Name)
 	}
 }
 
 func (c *Controller) OnRemoveIngress(ingress *networking.Ingress) {
-	ing, ok := c.ingresses[ingress.Name]
+	name := ingressName(ingress)
+	ing, ok := c.ingresses[name]
 	if ok {
 		ing.Remove(ingress)
 	}
-	delete(c.ingresses, ingress.Name)
+	delete(c.ingresses, name)
 }
 
 func (c *Controller) debounce() {
