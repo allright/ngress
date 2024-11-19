@@ -139,7 +139,7 @@ spec:
 
       containers:
         - name: ngress
-          image: allright/ngress:1.0.1
+          image: allright/ngress:1.0.2
           resources:
             limits:
               cpu: 100m
